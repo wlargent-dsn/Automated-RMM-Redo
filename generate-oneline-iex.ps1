@@ -1,12 +1,39 @@
-$remoteUrl = Read-Host "Enter the remote .ps1 URL"
+function Get-ConfigScript {
+    $scriptDir = Join-Path -Path $PSScriptRoot -ChildPath "Secret Scripts"
+    $scripts = Get-ChildItem -Path $scriptDir -Filter "*.ps1" |
+        Select-Object -Property Name, FullName
+    if ($scripts.Count -eq 0) {
+        Write-Host "No scripts found in $scriptDir" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Available Site Installer Scripts:" -ForegroundColor Cyan
+    for ($i = 0; $i -lt $scripts.Count; $i++) {
+        Write-Host "[$($i+1)] $($scripts[$i].Name)" -ForegroundColor Yellow
+    }
+    $selection = Read-Host "Enter the number of the script to run"
+    if (-not ($selection -match '^\d+$') -or [int]$selection -lt 1 -or [int]$selection -gt $scripts.Count) {
+        Write-Host "Invalid selection. Exiting." -ForegroundColor Red
+        exit 1
+    }
+    $selectedScript = $scripts[[int]$selection - 1].FullName
+    Write-Host "You selected: $($scripts[[int]$selection - 1].
+    Name)" -ForegroundColor Green
+    return $selectedScript
+}
+
+# List scripts in ./Secret Scripts/ and prompt user to select one, then use dot source to get the configuration variables out of it.
+# Dot source the selected script to load its variables and functions into the current scope
+. $(Get-ConfigScript)
 
 # 1. Define the actual work (Version-Agnostic Download and Run)
 # Using WebClient for PS 2.0 support and forcing TLS 1.2
 $innerPayload = @"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 `$p = "`$env:TEMP\rmm_install.ps1";
-(New-Object System.Net.WebClient).DownloadFile('$remoteUrl', `$p);
-powershell.exe -ExecutionPolicy Bypass -File `$p *>> 'C:\Windows\Temp\AgentInstaller_Bootstrap.log';
+(New-Object System.Net.WebClient).DownloadFile('$installerLogicScriptURL', `$p);
+powershell.exe -ExecutionPolicy Bypass -File `$p -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
+type 'C:\Windows\Temp\AgentInstaller_Bootstrap.log';
 "@
 
 # 2. Encode for PowerShell
