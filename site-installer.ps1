@@ -7,7 +7,7 @@ $AsioAgentURL = "https://prod.setup.itsupport247.net/windows/BareboneAgent/32/$A
 
 # --- LOGGING SETUP ---
 $LogPath = "C:\Windows\Temp\RMM_Redo.log"
-
+Write-Host "Log file: $LogPath" -ForegroundColor Cyan
 function Write-Log {
     param (
         [string]$Message,
