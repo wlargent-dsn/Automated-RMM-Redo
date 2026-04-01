@@ -1,3 +1,14 @@
+param(
+    [string]$AsioAgentFileName,
+    [string]$ScreenConnectURL
+)
+
+$AsioAgentURL = "https://prod.setup.itsupport247.net/windows/BareboneAgent/32/$AsioAgentFileName/MSI/setup"
+
+# --- CORE SETTINGS ---
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # --- LOGGING SETUP ---
 $LogPath = "C:\Windows\Temp\RMM_Redo.log"
 
