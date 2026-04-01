@@ -7,7 +7,7 @@ $AsioAgentURL = "https://prod.setup.itsupport247.net/windows/BareboneAgent/32/$A
 
 # --- LOGGING SETUP ---
 $LogPath = "C:\Windows\Temp\RMM_Redo.log"
-Write-Host "Log file: $LogPath" -ForegroundColor Cyan
+
 function Write-Log {
     param (
         [string]$Message,
@@ -317,6 +317,7 @@ function Clear-Log {
 Clear-Log
 Write-Log "--- Script Started: $(Get-Date) ---"
 Write-Log "Running on: $env:COMPUTERNAME"
+Write-Log "Log file: $LogPath" -ForegroundColor Cyan
 
 # Blanket ScreenConnect Install
 Install-ApplicationMSI -Url $ScreenConnectURL -Name "ScreenConnect_Client"
