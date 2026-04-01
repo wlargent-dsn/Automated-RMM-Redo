@@ -1,3 +1,30 @@
+# --- LOGGING SETUP ---
+$LogPath = "C:\Windows\Temp\RMM_Redo.log"
+
+function Write-Log {
+    param (
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $LogLine = "[$Timestamp] [$Level] $Message"
+
+    # Console Output with Colors
+    switch ($Level) {
+        "ERROR" { Write-Host $LogLine -ForegroundColor Red }
+        "WARN"  { Write-Host $LogLine -ForegroundColor Yellow }
+        "SUCCESS" { Write-Host $LogLine -ForegroundColor Green }
+        Default { Write-Host $LogLine -ForegroundColor Cyan }
+    }
+
+    # File Output (Append)
+    try {
+        $LogLine | Out-File -FilePath $LogPath -Append -Encoding ASCII -ErrorAction SilentlyContinue
+    } catch {
+        # Failsafe if log file is locked
+    }
+}
+
 enum AgentWatermarks {
     NoWatermark = 0
     AsioWatermark = 1
