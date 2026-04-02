@@ -32,7 +32,7 @@ $innerPayload = @"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 `$p = "`$env:TEMP\rmm_install.ps1";
 (New-Object System.Net.WebClient).DownloadFile('$installerLogicScriptURL', `$p);
-powershell.exe -ExecutionPolicy Bypass -File `$p -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
+powershell.exe -ExecutionPolicy Bypass -File "`$p" -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
 "@
 
 # 2. Encode for PowerShell
