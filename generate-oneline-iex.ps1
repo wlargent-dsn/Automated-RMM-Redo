@@ -26,13 +26,14 @@ function Get-ConfigScript {
 # Dot source the selected script to load its variables and functions into the current scope
 . $(Get-ConfigScript)
 
+$scriptTempPath = "C:\Windows\TEMP\rmm_install.ps1";
+
 # 1. Define the actual work (Version-Agnostic Download and Run)
 # Using WebClient for PS 2.0 support and forcing TLS 1.2
 $innerPayload = @"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-`$p = "`$env:TEMP\rmm_install.ps1";
-(New-Object System.Net.WebClient).DownloadFile('$installerLogicScriptURL', `$p);
-powershell.exe -ExecutionPolicy Bypass -File "`$p" -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
+(New-Object System.Net.WebClient).DownloadFile('$installerLogicScriptURL', '$scriptTempPath');
+powershell.exe -ExecutionPolicy Bypass -File "$scriptTempPath" -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
 "@
 
 # 2. Encode for PowerShell
@@ -44,7 +45,7 @@ $encoded = [Convert]::ToBase64String($bytes)
 $wrapper = "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand $encoded"
 $escapedWrapper = $wrapper.Replace("'", "''")
 
-$finalCmd = "powershell -NoProfile -Command ""if(Get-Command Invoke-CimMethod -ErrorAction SilentlyContinue){Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='$escapedWrapper'}}else{(Get-WmiObject -List Win32_Process).Create('$escapedWrapper')};type \`"C:\Windows\Temp\AgentInstaller_Bootstrap.log\`";"""
+$finalCmd = "powershell -NoProfile -Command ""if(Get-Command Invoke-CimMethod -ErrorAction SilentlyContinue){Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='$escapedWrapper'}}else{(Get-WmiObject -List Win32_Process).Create('$escapedWrapper')};Get-Content 'C:\Windows\Temp\AgentInstaller_Bootstrap.log';"""
 
 Write-Host "`n--- UNIVERSAL CMD WRAPPER (WS08R2 to WS25) ---`n" -ForegroundColor Green
 Write-Output $finalCmd
