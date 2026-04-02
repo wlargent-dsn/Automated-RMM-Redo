@@ -32,6 +32,7 @@ $scriptTempPath = "C:\Windows\TEMP\rmm_install.ps1";
 # Using WebClient for PS 2.0 support and forcing TLS 1.2
 $innerPayload = @"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+rm -Force '$scriptTempPath' -ErrorAction SilentlyContinue;
 (New-Object System.Net.WebClient).DownloadFile('$installerLogicScriptURL', '$scriptTempPath');
 powershell.exe -ExecutionPolicy Bypass -File "$scriptTempPath" -AsioAgentFileName "$AsioAgentFileName" -ScreenConnectURL "$ScreenConnectURL" *> "C:\Windows\Temp\AgentInstaller_Bootstrap.log";
 "@
