@@ -348,6 +348,6 @@ if (Assert-RunningAgentService) {
 }
 
 $Watermark = Get-Watermark # Check watermark
-Write-Log "RMM Agent is not running with watermark: $([AgentWatermarks]$Watermark.ToString())" "WARN"
+Write-Log "Agent watermark: $([AgentWatermarks]$Watermark.ToString())" "INFO"
 
 ExitCleanup
