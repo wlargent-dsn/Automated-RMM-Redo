@@ -46,7 +46,7 @@ $encoded = [Convert]::ToBase64String($bytes)
 $wrapper = "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand $encoded"
 $escapedWrapper = $wrapper.Replace("'", "''")
 
-$finalCmd = "powershell -NoProfile -Command ""if(Get-Command Invoke-CimMethod -ErrorAction SilentlyContinue){Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='$escapedWrapper'}}else{(Get-WmiObject -List Win32_Process).Create('$escapedWrapper')};Get-Content 'C:\Windows\Temp\AgentInstaller_Bootstrap.log';"""
+$finalCmd = "powershell -NoProfile -Command ""if(Get-Command Invoke-CimMethod -ErrorAction SilentlyContinue){Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='$escapedWrapper'}}else{(Get-WmiObject -List Win32_Process).Create('$escapedWrapper')};Write-Host Run type 'C:\Windows\Temp\AgentInstaller_Bootstrap.log' to see bootstrap logs;"""
 
 Write-Host "`n--- UNIVERSAL CMD WRAPPER (WS08R2 to WS25) ---`n" -ForegroundColor Green
 Write-Output $finalCmd
